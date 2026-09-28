@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173b2f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Steady Dad</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body{margin:0;background:#f4f1e8;color:#18241f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:680px;margin:auto;padding:32px 18px}
+.card{background:#fffdf7;border:1px solid #e2ddd0;border-radius:24px;padding:24px;margin:14px 0;box-shadow:0 10px 30px #0001}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c49a3a}
+h1{font-size:40px;margin:6px 0}.sub{color:#66716b}
+.label{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#66716b}
+.verse{font:25px/1.4 Georgia,serif}.ref{font-weight:700;color:#173b2f}
+.reflection{font-size:17px;line-height:1.55}.btn{border:0;border-radius:14px;padding:14px;margin:5px;font-weight:700;background:#173b2f;color:white}
+.secondary{background:#e9eee8;color:#173b2f}.actions{margin:15px -5px}.breath{text-align:center}
+.circle{width:115px;height:115px;border-radius:50%;background:#dfe9e2;margin:15px auto;display:grid;place-items:center;color:#173b2f;font-weight:800;transition:transform 4s}
+.inhale{transform:scale(1.2)}.stats{display:flex;justify-content:space-between}.num{font-size:34px;font-weight:800;color:#173b2f}
+.small{font-size:13px;color:#66716b;line-height:1.45}.footer{text-align:center;color:#66716b;font-size:12px}
+</style>
+</head>
+<body>
+<main>
+<div><div class="eyebrow">Daily encouragement for dads</div><h1>Steady Dad</h1><p class="sub">Pause. Pray. Respond with patience.</p></div>
+
+<section class="card">
+<div class="label">Today’s verse</div>
+<p class="verse" id="verse"></p><div class="ref" id="ref"></div><hr>
+<div class="label">A thought for dad</div><p class="reflection" id="reflection"></p>
+<div class="actions"><button class="btn" id="save">♡ Save verse</button><button class="btn secondary" id="new">New verse</button></div>
+</section>
+
+<section class="card">
+<div class="label">When anger rises</div><h2>Take one steady minute.</h2>
+<p class="small">Slow your breathing before you answer. You do not have to win the moment; you can protect the relationship.</p>
+<div class="breath"><div class="circle" id="circle">Breathe</div><div class="label" id="breathText">Tap start</div><button class="btn secondary" id="breathBtn">Start breathing</button></div>
+</section>
+
+<section class="card">
+<div class="stats"><div><div class="label">Steady days</div><div class="num" id="streak">0</div></div>
+<div style="text-align:right"><div class="label">Saved verses</div><div class="num" id="savedCount">0</div></div></div>
+<p class="small">Showing up consistently matters more than being perfect.</p>
+</section>
+<div class="footer">Steady Dad • A simple daily pause for fathers</div>
+</main>
+
+<script>
+const v=[
+['Be completely humble and gentle; be patient, bearing with one another in love.','Ephesians 4:2','Patience is choosing a calm response when your emotions ask you to react.'],
+['A gentle answer turns away wrath, but a harsh word stirs up anger.','Proverbs 15:1','Your tone can change the direction of a hard moment. Lower the temperature before solving the problem.'],
+['Everyone should be quick to listen, slow to speak and slow to become angry.','James 1:19','Give your kids the gift of being heard. A few seconds of listening can be more powerful than a long lecture.'],
+['The Lord is compassionate and gracious, slow to anger, abounding in love.','Psalm 103:8','When you need patience, remember the patience you have received. Let that shape how you respond at home.'],
+['Cast all your anxiety on him because he cares for you.','1 Peter 5:7','Give God the weight before you give your family your words.']
+];
+let i=Math.floor(Date.now()/86400000)%v.length;
+let s=JSON.parse(localStorage.getItem('saved')||'[]');
+
+function render(){
+  verse.textContent='“'+v[i][0]+'”'; ref.textContent=v[i][1]; reflection.textContent=v[i][2];
+  savedCount.textContent=s.length; save.textContent=s.includes(v[i][1])?'♥ Saved':'♡ Save verse';
+}
+save.onclick=()=>{let r=v[i][1],n=s.indexOf(r);n<0?s.push(r):s.splice(n,1);localStorage.saved=JSON.stringify(s);render()};
+new.onclick=()=>{i=(i+1)%v.length;render()};
+
+let st=+localStorage.streak||0,last=localStorage.last;
+if(last!==new Date().toDateString()){st++;localStorage.streak=st;localStorage.last=new Date().toDateString()}
+streak.textContent=st;
+
+let timer;
+breathBtn.onclick=()=>{
+ if(timer){clearInterval(timer);timer=null;circle.className='circle';breathBtn.textContent='Start breathing';breathText.textContent='Tap start'}
+ else{
+  let n=0;
+  const go=()=>{n++;let x=n%2;circle.className='circle '+(x?'inhale':'');breathText.textContent=x?'Inhale slowly':'Exhale slowly'};
+  go();timer=setInterval(go,4000);breathBtn.textContent='Stop'
+ }
+};
+render();
+</script>
+</body>
+</html>
